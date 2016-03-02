@@ -1,5 +1,6 @@
 package com.creativejones.andre.recommendations;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.creativejones.andre.recommendations.api.Etsy;
+import com.creativejones.andre.recommendations.google.GoogleServicesHelper;
 import com.creativejones.andre.recommendations.model.ActiveListings;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView errorView;
     private static final String STATE_ACTIVE_LISTINGS = "LISTing_key";
     private ListingAdapter adapter;
+    private GoogleServicesHelper mGoogleServicesHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,19 +43,15 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView.setAdapter(adapter);
 
-        if(savedInstanceState == null){
-            Etsy.getActiveListings(adapter);
-        } else {
-            if(savedInstanceState.containsKey(STATE_ACTIVE_LISTINGS)) {
-                adapter.success((ActiveListings) savedInstanceState.getParcelable(STATE_ACTIVE_LISTINGS), null);
-                showList();
-            } else {
-                showLoading();
-                Etsy.getActiveListings(adapter);
-            }
-        }
+        mGoogleServicesHelper = new GoogleServicesHelper(this, adapter);
 
         showLoading();
+
+        if(savedInstanceState != null){
+            if(savedInstanceState.containsKey(STATE_ACTIVE_LISTINGS)) {
+                adapter.success((ActiveListings) savedInstanceState.getParcelable(STATE_ACTIVE_LISTINGS), null);
+            }
+        }
     }
 
     @Override
@@ -63,6 +62,24 @@ public class MainActivity extends AppCompatActivity {
         if(listings != null) {
             outState.putParcelable(STATE_ACTIVE_LISTINGS, listings);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleServicesHelper.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleServicesHelper.disconnect();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mGoogleServicesHelper.handleActivityResult(requestCode, resultCode, data);
     }
 
     @Override

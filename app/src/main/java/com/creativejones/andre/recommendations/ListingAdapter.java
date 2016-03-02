@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.creativejones.andre.recommendations.api.Etsy;
+import com.creativejones.andre.recommendations.google.GoogleServicesHelper;
 import com.creativejones.andre.recommendations.model.ActiveListings;
 import com.creativejones.andre.recommendations.model.Listing;
 import com.squareup.picasso.Picasso;
@@ -18,15 +20,17 @@ import retrofit.client.Response;
 
 
 public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingHolder>
-    implements Callback<ActiveListings> {
+    implements Callback<ActiveListings>, GoogleServicesHelper.GoogleServicesListener {
 
     private LayoutInflater mInflater;
     private ActiveListings mActiveListings;
     private MainActivity mActivity;
+    private boolean isGooglePlayServicesAvailable;
 
     public ListingAdapter(MainActivity activity){
         mInflater = LayoutInflater.from(activity);
         mActivity = activity;
+        isGooglePlayServicesAvailable = false;
     }
 
     @Override
@@ -41,6 +45,12 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
         holder.titleView.setText(listing.title);
         holder.shopNameView.setText(listing.Shop.shop_name);
         holder.priceView.setText(listing.price);
+
+        if(isGooglePlayServicesAvailable){
+            //show plus one button
+        } else {
+            //dont
+        }
 
         Picasso.with(holder.imageView.getContext())
                 .load(listing.Images[0].url_570xN)
@@ -65,6 +75,28 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
     @Override
     public void failure(RetrofitError error) {
         mActivity.showError();
+    }
+
+    @Override
+    public void onConnected() {
+        if(getItemCount() == 0){
+            Etsy.getActiveListings(this);
+        }
+
+        isGooglePlayServicesAvailable = true;
+
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDisconnected() {
+        if(getItemCount() == 0){
+            Etsy.getActiveListings(this);
+        }
+
+        isGooglePlayServicesAvailable = false;
+
+        notifyDataSetChanged();
     }
 
     public class ListingHolder extends RecyclerView.ViewHolder {
