@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 
 public class GoogleServicesHelper implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
@@ -27,6 +28,9 @@ public class GoogleServicesHelper implements GoogleApiClient.ConnectionCallbacks
         mClient = new GoogleApiClient.Builder(activity)
                         .addConnectionCallbacks(this)
                         .addOnConnectionFailedListener(this)
+                        .addApi(Plus.API, Plus.PlusOptions.builder()
+                                            .setServerClientId("798656238650-r40fl6esh1uj21niehckfn85jtg6cgib.apps.googleusercontent.com")
+                                            .build())
                         .build();
     }
 
