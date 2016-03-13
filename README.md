@@ -1,8 +1,7 @@
 # Recommendations
 
-TeamTreehouse.com tutorial on using Google Play Services in Android Application.  In addition to utilizing Google Play Services this project 
-also makes use of the Etsy API and RecyclerViews to list Products.  The specific Google Play Service used is the Google Plus api to share
-and plus one Etsy Products.
+Treehouse tutorial on using Google Play Services in Android Application.  In addition to utilizing Google Play Services, this project 
+also makes use of the Etsy API to populate products and RecyclerViews to list them.  The specific Google Play Service used is the Google Plus api to share and plus one Etsy Products.
 
 ## Contributing
 
